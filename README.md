@@ -1,0 +1,2 @@
+# Toxic Comment Moderation App
+This project includes an api directory, client directory, models directory, and monitoring directory for our Toxic Comment Moderation app as part of the comp_4705 final project.
