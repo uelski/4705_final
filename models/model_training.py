@@ -35,7 +35,7 @@ def init_wandb(project_name="toxic_comment_prediction", experiment_name=None, co
 
 def load_and_prepare_data():
     """
-    
+    load the training data, test data and test labels from aws s3 bucket
     """
     # read csv
     print('load and prepare data')
@@ -53,25 +53,10 @@ def load_and_prepare_data():
     return X_train, X_test, y_train, y_test, label_cols
 
 
-# def make_predictions(model, test_file='models/test.csv'):
-#     print(f'make predictions for ')
-#     """Make predictions on test set and save for submission"""
-#     test_data = pd.read_csv(test_file)
-#     test_comments = test_data['comment_text'].fillna('')
-    
-#     predictions = model.predict_proba(test_comments)
-    
-#     target_cols = ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate']
-#     out_df = pd.DataFrame({'id': test_data['id']})
-    
-#     for i, col in enumerate(target_cols):
-#         if predictions[i].shape[1] > 1: # predict proba occasional flips these? https://www.geeksforgeeks.org/machine-learning/understanding-the-predictproba-function-in-scikit-learns-svc/
-#             out_df[col] = predictions[i][:, 1]
-#         else:
-#             out_df[col] = predictions[i][:, 0]
-#     return out_df
-
 def build_nb_pipeline():
+    """
+    build Multinomial NaiveBayes model pipeline
+    """
     print('building nb pipeline')
     vectorizer = CountVectorizer(stop_words='english')
     clf = MultiOutputClassifier(MultinomialNB(alpha=0.1))
@@ -83,6 +68,9 @@ def build_nb_pipeline():
     return nb_pipeline
 
 def build_lr_pipeline():
+    """
+    build LogisticRegression model pipeline
+    """
     print('building lr pipeline')
     lr_pipeline = Pipeline([
         ("tfidf", TfidfVectorizer(
@@ -103,6 +91,9 @@ def build_lr_pipeline():
     return lr_pipeline
 
 def build_svm_pipeline():
+    """
+    build the LinearSVC model pipeline
+    """
     print('building svm pipeline')
     svm_pipeline = Pipeline([
         ("tfidf", TfidfVectorizer(
@@ -113,9 +104,9 @@ def build_svm_pipeline():
             sublinear_tf=True
         )),
         ("clf", OneVsRestClassifier(
-            LinearSVC(  # strong margins; fast on sparse text
-                C=1.0,          # tune if you like: [0.25, 0.5, 1, 2]
-                class_weight="balanced"  # helps rare labels
+            LinearSVC(  
+                C=1.0,   
+                class_weight="balanced"
             ),
             n_jobs=-1
         ))
@@ -125,7 +116,7 @@ def build_svm_pipeline():
 
 def train_model(pipeline, X_train, y_train, X_test, model_name):
     """
-    Train a model and log metrics to W&B
+    Train a model 
     """
     print(f"Training {model_name}...")
 
@@ -136,6 +127,9 @@ def train_model(pipeline, X_train, y_train, X_test, model_name):
     return y_pred
 
 def compute_and_log_metrics(y_true, y_pred, run, label_cols):
+    """
+    calculate and send metrics to wandb.ai dashboard
+    """
     print('computing metrics')
     metrics = {
         "micro/f1":       f1_score(y_true, y_pred, average="micro", zero_division=0),
@@ -158,6 +152,9 @@ def compute_and_log_metrics(y_true, y_pred, run, label_cols):
     return metrics_to_log
 
 def build_model_artifact(model_name, pipeline, registry_name, label_cols, metrics, run):
+    """
+    build model, dump locally and use local path to create W&B artifact and log
+    """
     print(f'build artifact for {model_name}')
 
     model_path = f"models/{model_name}.joblib"
@@ -246,69 +243,5 @@ def main():
     print(results_df[["key","micro/f1","macro/f1"]])
 
 if __name__ == '__main__':
-    """
-    Main training pipeline - trains one model at a time
-    """
     main()
 
-
-    # def read_data():
-#     train_data = pd.read_csv('models/train.csv')
-#     x = train_data['comment_text'].fillna('')
-#     targets = ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate']
-#     y = train_data[targets]
-#     return x, y, targets
-
-    # def train_model(x, y):
-#     vectorizer = CountVectorizer(stop_words='english')
-#     clf = MultiOutputClassifier(MultinomialNB(alpha=0.1))
-#     wandb.log({
-#         'vectorizer_type': vectorizer.__class__.__name__,
-#         'classifier_type': clf.__class__.__name__
-#     })
-#     pipe = Pipeline(steps=[
-#         ('vectorizer', vectorizer),
-#         ('clf', clf)
-#     ])
-
-#     return pipe.fit(x, y)
-
-# def dump_to_file(pipeline_object, targets, filename='models/toxic_comment_model.pkl'):
-#     model_data = {
-#         'model': pipeline_object,
-#         'target_columns': targets
-#     }
-#     joblib.dump(model_data, filename)
-#     print('model saved')
-
-
-    # model_artifact = wandb.Artifact(
-    #     'comments_model',
-    #     type='model',
-    #     description='Toxic comment classification model'
-    # )
-    # model_artifact.add_file('models/toxic_comment_model.pkl')
-    # wandb.log_artifact(model_artifact)
-    # wandb.finish()
-
-    # X, y, targets = read_data()
-    
-    # print(f"Label distribution:")
-    # stratification = 'obscene'
-    # print(y.sum())
-    # x_train, x_test, y_train, y_test = train_test_split(
-    #     X, y, test_size=0.2, stratify=y[stratification]
-    # )
-    
-    # model = train_model(x_train, y_train)
-    # dump_to_file(model, targets)
-
-    # predictions_log = make_predictions(model)
-    # test_labels = pd.read_csv('models/test_labels.csv').replace(-1, 1)
-    # for target in targets:
-    #     wandb.log({
-    #         f"{target}_accuracy": accuracy_score(test_labels[target], predictions_log[target] > 0.5),
-    #         f"{target}_f1": f1_score(test_labels[target], predictions_log[target] > 0.5),
-    #         f"{target}_precision": precision_score(test_labels[target], predictions_log[target] > 0.5),
-    #         f"{target}_recall": recall_score(test_labels[target], predictions_log[target] > 0.5),
-    #     })
