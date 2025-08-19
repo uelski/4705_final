@@ -41,13 +41,14 @@ def load_and_prepare_data():
     print('load and prepare data')
     train_df = pd.read_csv("https://toxic-comment-moderation-app.s3.us-east-1.amazonaws.com/train.csv")
     test_df = pd.read_csv("https://toxic-comment-moderation-app.s3.us-east-1.amazonaws.com/test.csv")
+    test_labels_df = pd.read_csv("https://toxic-comment-moderation-app.s3.us-east-1.amazonaws.com/test_labels.csv").replace(-1, 1)
 
     label_cols = ['toxic','severe_toxic','obscene','threat','insult','identity_hate']
     X_train = train_df['comment_text']
     y_train = train_df[label_cols]
 
     X_test = test_df['comment_text']
-    y_test = test_df[label_cols]
+    y_test = test_labels_df[label_cols]
 
     return X_train, X_test, y_train, y_test, label_cols
 
@@ -202,7 +203,7 @@ def main():
 
     # init results for viewing model performance together:
     results = []
-
+    
     # Train each model in a separate W&B run
     for model_name, model_data in models.items():
         print(f'start of loop for {model_name}')
