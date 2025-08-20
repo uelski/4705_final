@@ -16,7 +16,7 @@ run:
 clean:
 	@echo "Stopping and removing container first"
 	docker stop $(CONTAINER_NAME) || true
-	docker rm $(ONTAINER_NAME) || true
+	docker rm $(CONTAINER_NAME) || true
 
 	@echo "Removing Docker image: $(IMAGE_NAME)"
 	docker rmi $(IMAGE_NAME) || true
