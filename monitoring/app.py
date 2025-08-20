@@ -5,6 +5,7 @@ import os
 import pandas as pd
 from sklearn.metrics import accuracy_score, precision_score
 from pathlib import Path
+import boto3
 
 # show banner
 alert_placeholder = st.empty()

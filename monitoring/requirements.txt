@@ -6,3 +6,6 @@ datetime
 matplotlib
 pytest
 pathlib
+requests
+boto3
+matplotlib
