@@ -17,7 +17,6 @@ app = FastAPI(
 DYNAMODB_TABLE_NAME = os.environ.get("DYNAMODB_TABLE_NAME", "table_01")
 AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
 
-
 model = None
 
 def _load_model():

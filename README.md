@@ -89,7 +89,7 @@ Create the EC2 instance:
         ○ Configure its Security Group to allow incoming traffic on:
             § Port 22 (SSH) from your IP address for access.
             § Port 8000 (FastAPI) from anywhere (Custom TCP)
-            § Port 8501 (Streamlit) from anywhere (Custom TCP)
+            Set IAM role to LabInstanceProfile
         ○ Connect to your EC2 instance using SSH.
     2. Set up the Server Environment:
         ○ On the EC2 instance, install Docker and Git.
@@ -111,34 +111,33 @@ In putty, Under Connection>SSH>Auth>Credentials in the "Private key file for aut
 In putty, under Window>Appearance, increase the font size.
 In putty, Under Session, save this session
 In putty, click open
+
 In the putty cli, the username is "ubuntu". 
 Run each of the following commands:
-### Update packages and install Docker
-sudo apt-get update -y
-sudo apt-get install docker.io -y
 
-### Start and enable Docker so it runs on boot
-sudo systemctl start docker
-sudo systemctl enable docker
+$ sudo apt-get update -y
+$ sudo apt-get install docker.io -y
 
-### Add the 'ubuntu' user to the docker group
-sudo usermod -aG docker ubuntu
+$ sudo systemctl start docker
+$ sudo systemctl enable docker
+$ sudo usermod -aG docker ubuntu
+$ git --version (to confirm git is installed)
 
-Log out and log back in to apply the group changes
+Cloning github (instructions for specific branch and directory)
+$ git clone --no-checkout --depth 1 --branch feature/api-v02 https://github.com/uelski/4705_final.git
+$ cd 4705_final
+$ git sparse-checkout init --cone
+$ git sparse-checkout set api
+$ git checkout feature/api-v02
+$ cd api
 
+create secrets.json:
+$ echo '{ "wandb_api_key": "1234" }' > secrets.json
 
-Still in the putty cli, run:
-git --version (to confirm git is installed)
-git clone https://github.com/twinchutes/comp_4705_hw_06.git
-sudo apt install make
-sudo apt install make-doc
-cd comp_4705_hw_06
-sudo make build
-sudo make run
+Running the app:
+$ sudo apt install make
+$ sudo apt install make-doc
+$ sudo make buildrun
 
-If the instance times out or if you close putty, you must create a new ppk file.
-
-Dashboard will be located at ipv4address:8501, ie http://18.213.2.212:8501/ (it takes a long time to open in micro t2)
-In postman, make calls to ipv4address, for example, make a post request to:
 
 http://18.213.2.212:8000/predict
