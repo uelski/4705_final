@@ -7,8 +7,38 @@ from sklearn.metrics import accuracy_score, precision_score
 from pathlib import Path
 import boto3
 
+# setup
+TABLE_NAME = ""
+AWS_REGION = ""
+DDB_ENDPOINT = ""
+
+LABELS = ["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]
+
 # show banner
 alert_placeholder = st.empty()
+
+@st.cache_data(show_spinner=False)
+def get_table(table_name: str, region: str, endpoint: str):
+    session = boto3.Session(region_name=region)
+    if endpoint:
+        ddb = session.resource("dynamodb", endpoint_url=endpoint)
+    else:
+        ddb = session.resource("dynamodb")
+    return ddb.Table(table_name)
+
+@st.cache_data(show_spinner=True)
+def fetch_all_logs(table_name: str, region: str, endpoint: str, limit: int):
+    """
+    Scan to collect up to `limit` items.
+    Expected item keys:
+      - timestamp (str/datetime ISO)
+      - request_text (str)
+      - response (dict of label->0/1)
+      - true_labels (dict of label->0/1)
+    """
+    table = get_table(table_name, region, endpoint)
+
+    
 
 # title and description
 st.title('Toxic Comment Moderation Monitoring App')
