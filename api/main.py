@@ -6,12 +6,17 @@ from pathlib import Path
 from datetime import datetime
 import wandb
 import os
-from pyparsing import Optional
+import boto3
 
 # create app
 app = FastAPI(
     title="Toxic Comment Moderation App",
 )
+
+# Environment variables for S3 and DynamoDB
+DYNAMODB_TABLE_NAME = os.environ.get("DYNAMODB_TABLE_NAME", "table_01")
+AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
+
 
 model = None
 
@@ -43,7 +48,7 @@ except Exception as e:
 # create prediction request model
 class PredictionRequest(BaseModel):
     text: str
-    true_labels: Optional[dict] = None
+    true_labels: dict[str, int] = None  # expects keys: "toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"
 
 # generate startup event
 @app.on_event("startup")
@@ -80,9 +85,10 @@ def predict(request: PredictionRequest):
     # predict sentiment
     try:
         prediction = model.predict([request.text])[0]
-        prediction_output = {
-            f"sentiment_{i}": int(val) for i, val in enumerate(prediction)
-        }
+        labels = ["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]
+        prediction_output = {}
+        for i, label in enumerate(labels):
+            prediction_output[label] = int(prediction[i])
         print('prediction output: ', prediction_output)
         # create log entry
         log = {
@@ -91,10 +97,16 @@ def predict(request: PredictionRequest):
             'response': prediction_output,
             'true_labels': request.true_labels
         }
+        # write log entry to DynamoDB
+        try:
+            dynamodb = boto3.resource('dynamodb', region_name=AWS_REGION)
+            table = dynamodb.Table(DYNAMODB_TABLE_NAME)
+            table.put_item(
+                Item = log
+            )
+        except Exception as db_error:
+            print(f'Error saving prediction to DynamoDB: {db_error}')
+        return log
 
-        # write log entry
-        # with open("/logs/prediction_logs.json", "a") as f:
-        #     f.write(json.dumps(log) + "\n")
-        return prediction_output
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error predicting sentiment: {e}")
