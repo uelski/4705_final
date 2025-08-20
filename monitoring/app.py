@@ -6,35 +6,36 @@ import pandas as pd
 from sklearn.metrics import accuracy_score, precision_score
 from pathlib import Path
 import boto3
+from decimal import Decimal
 
 # setup
-TABLE_NAME = ""
-AWS_REGION = ""
-DDB_ENDPOINT = ""
-
+TABLE_NAME = os.getenv("DDB_TABLE", "table_01")
+AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
 LABELS = ["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]
 
-# connect to dynamodb
-@st.cache_data(show_spinner=False)
-def get_table(table_name: str, region: str, endpoint: str):
-    session = boto3.Session(region_name=region)
-    if endpoint:
-        ddb = session.resource("dynamodb", endpoint_url=endpoint)
-    else:
-        ddb = session.resource("dynamodb")
-    return ddb.Table(table_name)
+def _to_int_map(d: dict) -> dict:
+    if not isinstance(d, dict):
+        return {k: 0 for k in LABELS}
+    return {k: int(d.get(k, 0)) for k in LABELS}
 
-# fetch logs
-def fetch_all_logs(table_name: str, region: str, endpoint: str, limit: int):
-    """
-    Scan to collect items.
-    Expected item keys:
-      - timestamp (str/datetime ISO)
-      - request_text (str)
-      - response (dict of label->0/1)
-      - true_labels (dict of label->0/1)
-    """
-    pass
+def fetch_all_logs():
+    ddb = boto3.resource("dynamodb", region_name=AWS_REGION)
+    table = ddb.Table(TABLE_NAME)
+
+    resp = table.scan()
+    items = resp.get("Items", [])
+
+    # normalize to your expected shape
+    out = []
+    for it in items:
+        out.append({
+            "timestamp": it.get("timestamp"),
+            "request_text": it.get("request_text", ""),
+            "response": _to_int_map(it.get("response", {})),
+            "true_labels": _to_int_map(it.get("true_labels", {})),
+        })
+    return out
+
 
 # dummy json to test
 def load_logs_from_file(path: str):
@@ -42,8 +43,8 @@ def load_logs_from_file(path: str):
         data = json.load(f)
     return data
 
-
-logs = load_logs_from_file('dummy_logs.json')
+logs = fetch_all_logs()
+# logs = load_logs_from_file('dummy_logs.json')
 
 def build_prediction_df(logs):
     rows = []
