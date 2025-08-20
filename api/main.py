@@ -6,6 +6,7 @@ from pathlib import Path
 from datetime import datetime
 import wandb
 import os
+from pyparsing import Optional
 
 # create app
 app = FastAPI(
@@ -42,6 +43,7 @@ except Exception as e:
 # create prediction request model
 class PredictionRequest(BaseModel):
     text: str
+    true_labels: Optional[dict] = None
 
 # generate startup event
 @app.on_event("startup")
@@ -86,7 +88,8 @@ def predict(request: PredictionRequest):
         log = {
             "timestamp": datetime.now().isoformat(),
             "request_text": request.text,
-            'response': prediction_output
+            'response': prediction_output,
+            'true_labels': request.true_labels
         }
 
         # write log entry
