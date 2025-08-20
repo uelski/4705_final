@@ -3,7 +3,7 @@ import json
 import pandas as pd
 import requests
 
-API_URL = "http://<EC2-PUBLIC-IP>:8000/predict"
+API_URL = "http://13.221.176.248:8000/predict"
 
 # title and description
 st.title('Toxic Comment Moderation App')
