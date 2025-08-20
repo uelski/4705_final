@@ -99,6 +99,7 @@ alert_placeholder = st.empty()
 st.title('Toxic Comment Moderation Monitoring App')
 st.markdown("This app will be used to monitor the backend FastAPI application by plotting different data to help in analysing model performance.")
 
+st.subheader(f"Total Logs: {len(logs)}")
 # prediction distribution plots
 st.subheader("Distribution of 1s per label - Prediction")
 st.dataframe(pred_dist)
