@@ -52,6 +52,20 @@ if submitted:
     print(payload)
 
     # send to api here and show result
-    # res = requests.post(API_URL, json=payload)
-    # print(res.status_code)
-    # print(res.json())
+    res = requests.post(API_URL, json=payload)
+    print(res.status_code)
+    output = res.json()
+    print(output)
+    # {'toxic': 1, 'severe_toxic': 1, 'obscene': 0, 'threat': 1, 'insult': 0, 'identity_hate': 0}
+    if output:
+        st.header('Model prediction:')
+        st.subheader("Original Text:")
+        st.text(comment)
+        for sentiment, value in output.items():
+            st.subheader(f"{sentiment}")
+            st.text(f"Predicted: {value} | True: {true_labels[sentiment]}")
+            st.divider()
+
+    else:
+        st.header('Error processing predictions.')
+        st.error("Please try again later.", icon="🚨")
