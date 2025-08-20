@@ -3,7 +3,7 @@ import json
 import pandas as pd
 import requests
 
-API_URL = "http://13.221.176.248:8000/predict"
+API_URL = "http://13.217.16.78:8000/predict"
 
 # title and description
 st.title('Toxic Comment Moderation App')
@@ -49,22 +49,20 @@ if submitted:
         "true_labels": true_labels
     }
 
-    print(payload)
-
     # send to api here and show result
     res = requests.post(API_URL, json=payload)
-    print(res.status_code)
     output = res.json()
-    print(output)
-    # {'toxic': 1, 'severe_toxic': 1, 'obscene': 0, 'threat': 1, 'insult': 0, 'identity_hate': 0}
+
     if output:
         st.header('Model prediction:')
         st.subheader("Original Text:")
         st.text(comment)
-        for sentiment, value in output.items():
-            st.subheader(f"{sentiment}")
-            st.text(f"Predicted: {value} | True: {true_labels[sentiment]}")
-            st.divider()
+        for key, data in output.items():
+            if key == "response":
+                for sentiment,value in data.items():
+                    st.subheader(f"{sentiment}")
+                    st.text(f"Predicted: {value} | True: {true_labels[sentiment]}")
+                    st.divider()
 
     else:
         st.header('Error processing predictions.')
