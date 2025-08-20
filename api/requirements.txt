@@ -11,4 +11,4 @@ pytest
 pathlib
 httpx
 wandb
-pyparsing
+boto3
