@@ -41,8 +41,8 @@ if submitted:
         st.stop()
 
     selected_labels = [lbl for lbl, val in checkbox_state.items() if val]
-    print(f'selected labels', selected_labels)
-    true_labels = [1 if t in selected_labels else 0 for t in TOXICITY_LABELS]
+    
+    true_labels = {t: int(t in selected_labels) for t in TOXICITY_LABELS}
 
     payload = {
         "text": comment.strip(),
@@ -52,6 +52,6 @@ if submitted:
     print(payload)
 
     # send to api here and show result
-    res = requests.post(API_URL, json=payload)
-    print(res.status_code)
-    print(res.json())
+    # res = requests.post(API_URL, json=payload)
+    # print(res.status_code)
+    # print(res.json())
