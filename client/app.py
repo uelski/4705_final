@@ -3,7 +3,8 @@ import requests
 import os
 
 API_URL = os.environ.get("API_URL", "http://127.0.0.1:8000/predict")
-# export API_URL="http://<FASTAPI-EC2-PUBLIC-IP>:8000/predict"
+# touch .env
+# echo 'API_URL="http://<FASTAPI-EC2-PUBLIC-IP>:8000/predict' > .env"
 
 # title and description
 st.title('Toxic Comment Moderation App')
