@@ -10,7 +10,7 @@ build:
 # run: This command should run a container from your image, mapping the container's port to a port on your local machine so you can access the app in your browser.
 run:
 	@echo "Running Docker container on port $(PORT)"
-	docker run -d --name $(CONTAINER_NAME) -p $(PORT):$(PORT) $(IMAGE_NAME)
+	docker run -d --name $(CONTAINER_NAME) -p $(PORT):$(PORT) --env-file .env $(IMAGE_NAME)
 
 # clean: This command should delete the image.
 clean:

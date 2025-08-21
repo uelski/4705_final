@@ -1,7 +1,6 @@
 import wandb
 import pandas as pd
 import joblib
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import f1_score, precision_score, recall_score, accuracy_score
 import warnings
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
