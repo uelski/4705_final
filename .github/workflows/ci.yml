@@ -79,4 +79,3 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}/models
         run: pytest -q
-        dev
