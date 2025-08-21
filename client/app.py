@@ -1,9 +1,9 @@
 import streamlit as st
-import json
-import pandas as pd
 import requests
+import os
 
-API_URL = "http://13.217.16.78:8000/predict"
+API_URL = os.environ.get("API_URL", "http://127.0.0.1:8000/predict")
+# export API_URL="http://<FASTAPI-EC2-PUBLIC-IP>:8000/predict"
 
 # title and description
 st.title('Toxic Comment Moderation App')
