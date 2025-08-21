@@ -30,6 +30,10 @@ To get this app up and running Docker and python must be installed on your machi
 - 'cd' into this cloned repo.
 - API:
     - cd /api
+    - create a secrets.json file with a working wandb.ai api key, populated like this:
+        ```
+        { "wandb_api_key": "<your_api_key>" }
+        ```
     - Run 'make build' to build the Docker image.
     - Run 'make run' to run the Docker container
     - The endpoints should now be accessible at http://127.0.0.1:8000 on your machine.
@@ -38,6 +42,10 @@ To get this app up and running Docker and python must be installed on your machi
     - Run 'make clean' to remove the Docker image.
 - CLIENT:
     - cd /client
+    - create a .env file if you wish to test a deployed version of the api and populate it with the endpoint url like so:
+        ```
+        API_URL=http://<FASTAPI-EC2-PUBLIC-IP>:8000/predict
+        ```
     - Run 'make build' to build the Docker image.
     - Run 'make run' to run the Docker container
     - Navigate to http://localhost:8501/ to view the frontend streamlit app
@@ -146,6 +154,17 @@ DynamoDB Table Creation & Connection
 - Partition key: "timestamp" type = String
 
 Now you should have all of the necessary tools installed on your EC2 instance to run the applications.
+- IMPORTANT: You will need to create files for the API and CLIENT applications within your EC2 instance before running them:
+    - API:
+    ```
+    touch secrets.json
+    echo '{ "wandb_api_key": "<your_api_key>" }' > secrets.json
+    ```
+    - CLIENT:
+    ```
+    touch .env
+    echo 'API_URL=http://<FASTAPI-EC2-PUBLIC-IP>:8000/predict' > .env
+    ```
 - follow the 'Local Development' section of this readme:
     - git clone the repo on the ec2 instance
     - cd into the repo
