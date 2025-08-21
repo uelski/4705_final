@@ -1,12 +1,12 @@
 import streamlit as st
 import json
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import os
 import pandas as pd
 from sklearn.metrics import accuracy_score, precision_score
-from pathlib import Path
+# from pathlib import Path
 import boto3
-from decimal import Decimal
+# from decimal import Decimal
 
 # setup
 TABLE_NAME = os.getenv("DDB_TABLE", "table_01")

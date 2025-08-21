@@ -2,7 +2,6 @@ import joblib
 from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel
 import json
-from pathlib import Path
 from datetime import datetime
 import wandb
 import os
