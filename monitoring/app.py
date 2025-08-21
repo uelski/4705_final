@@ -50,8 +50,8 @@ def build_prediction_df(logs):
     rows = []
     for log in logs:
         row = {}
-        for l in LABELS:
-            row[l] = log["response"].get(l)
+        for label in LABELS:
+            row[label] = log["response"].get(label)
         rows.append(row)
     df = pd.DataFrame(rows)
     return df
@@ -65,8 +65,8 @@ def build_true_df(logs):
     rows = []
     for log in logs:
         row = {}
-        for l in LABELS:
-            row[l] = log["true_labels"].get(l)
+        for label in LABELS:
+            row[label] = log["true_labels"].get(label)
         rows.append(row)
     df = pd.DataFrame(rows)
     return df
@@ -81,14 +81,14 @@ y_true = true_df[LABELS].to_numpy()
 y_pred = pred_df[LABELS].to_numpy()
 
 accuracies = {}
-for l in LABELS:
-    accuracies[l] = accuracy_score(true_df[l], pred_df[l])
+for label in LABELS:
+    accuracies[label] = accuracy_score(true_df[label], pred_df[label])
 
 exact_match_acc = accuracy_score(y_true, y_pred)
 
 precisions = {}
-for l in LABELS:
-    precisions[l] = precision_score(true_df[l], pred_df[l], zero_division=0)
+for label in LABELS:
+    precisions[label] = precision_score(true_df[label], pred_df[label], zero_division=0)
     
 precision_macro = precision_score(y_true, y_pred, average="macro", zero_division=0)
 
