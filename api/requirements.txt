@@ -12,4 +12,3 @@ pathlib
 httpx
 wandb
 boto3
-json
