@@ -2,7 +2,6 @@ import joblib
 from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel
 import json
-from pathlib import Path
 from datetime import datetime
 import wandb
 import os
@@ -13,7 +12,7 @@ app = FastAPI(
     title="Toxic Comment Moderation App",
 )
 
-# Environment variables for S3 and DynamoDB
+# Environment variables for DynamoDB
 DYNAMODB_TABLE_NAME = os.environ.get("DYNAMODB_TABLE_NAME", "table_01")
 AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
 

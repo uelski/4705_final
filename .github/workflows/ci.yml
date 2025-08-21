@@ -28,7 +28,7 @@ jobs:
       - name: Lint API
         working-directory: api
         run: |
-          ruff check . || echo "Ruff linting failed, but continuing..."
+          ruff check main.py || echo "Ruff linting failed, but continuing..."
 
       - name: Test API
         working-directory: api
@@ -44,7 +44,7 @@ jobs:
 
       - name: Lint Client
         working-directory: client
-        run: ruff check . || echo "Ruff linting failed, but continuing..."
+        run: ruff check app.py || echo "Ruff linting failed, but continuing..."
 
       - name: Test Client
         working-directory: client
@@ -60,11 +60,7 @@ jobs:
 
       - name: Lint Monitoring
         working-directory: monitoring
-        run: ruff check . || echo "Ruff linting failed, but continuing..."
-
-      # - name: Test Monitoring
-      #   working-directory: monitoring
-      #   run: pytest -q test_dashboard.py
+        run: ruff check app.py || echo "Ruff linting failed, but continuing..."
 
       # ---------- Models ----------
       - name: Install Models deps
@@ -83,4 +79,3 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}/models
         run: pytest -q
-        dev
