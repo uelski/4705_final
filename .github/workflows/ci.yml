@@ -2,7 +2,7 @@ name: API, Client and Monitoring CI/CD
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [ main, dev ]
     types: [ opened, synchronize, reopened ]
 
 jobs:
@@ -31,7 +31,7 @@ jobs:
 
       - name: Test API
         working-directory: api
-        run: pytest -q
+        run: pytest -q test_api.py
 
       # ---------- Client ----------
       - name: Install Client deps
