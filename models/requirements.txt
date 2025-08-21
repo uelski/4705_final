@@ -2,6 +2,6 @@ numpy
 pandas
 scikit-learn
 wandb
-json
 uuid
 joblib
+pytest
