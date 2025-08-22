@@ -1,0 +1,14 @@
+fastapi
+uvicorn[standard]
+fastapi[standard]
+pydantic
+joblib
+numpy
+pandas
+scikit-learn
+datetime
+pytest
+pathlib
+httpx
+wandb
+boto3

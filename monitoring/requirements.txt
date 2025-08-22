@@ -1,0 +1,12 @@
+pandas
+scikit-learn
+joblib
+streamlit
+datetime
+matplotlib
+pytest
+pathlib
+requests
+boto3
+matplotlib
+numpy

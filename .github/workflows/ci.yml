@@ -1,0 +1,81 @@
+name: API, Client and Monitoring CI/CD
+
+on:
+  pull_request:
+    branches: [ main, dev ]
+    types: [ opened, synchronize, reopened ]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # ---------- API ----------
+      - name: Install API deps
+        working-directory: api
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest ruff
+
+      - name: Lint API
+        working-directory: api
+        run: |
+          ruff check main.py
+
+      - name: Test API
+        working-directory: api
+        run: pytest -q test_api.py
+
+      # ---------- Client ----------
+      - name: Install Client deps
+        working-directory: client
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest ruff
+
+      - name: Lint Client
+        working-directory: client
+        run: ruff check app.py
+
+      - name: Test Client
+        working-directory: client
+        run: pytest -q test_client.py
+
+      # # ---------- Monitoring ----------
+      - name: Install Monitoring deps
+        working-directory: monitoring
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest ruff
+
+      - name: Lint Monitoring
+        working-directory: monitoring
+        run: ruff check app.py
+
+      # ---------- Models ----------
+      - name: Install Models deps
+        working-directory: models
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest ruff
+
+      - name: Lint Models
+        working-directory: models
+        run: ruff check .
+
+      - name: Test Models
+        working-directory: models
+        env:
+          PYTHONPATH: ${{ github.workspace }}/models
+        run: pytest -q
