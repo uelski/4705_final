@@ -78,7 +78,7 @@ With Postman:<br>
     - {"text": "Toxic Comment Here!", "true_labels": {"toxic": 0, "severe_toxic": 0, "obscene": 0, "threat": 0, "insult": 0, "identity_hate": 0}}
 
 ## Manual Deployment Guide
-These are the directions to create AWS EC2 instances, connect via ssh, and build and run the API, CLIENT, and MONITORING applications from this repository. 
+These are the directions to create AWS EC2 instances, connect via ssh, and build and run the API, CLIENT, and MONITORING applications from this repository. The high-level overview is you need to create 3 separate EC2 instances, ssh into each of them from your local machine and clone and pull this repository. Then you can change into the /api, /client, and /monitoring directories in the separate EC2 instances to build and run each application using the commands below.
 
 Create an EC2 Instance:
 - In the AWS Management Console search and navigate to the EC2 console.
@@ -97,7 +97,7 @@ Create an EC2 Instance:
     - Set type: Custom TCP, Port range: 8501, Source type: Anywhere, Source (IPv4): 0.0.0.0/0
 - Finally, select 'Launch Instance'
 
-Now you can connect to your instance, download the necessary packages, git clone, and run the applications in your EC2 instance.
+Now you can connect to your instances, download the necessary packages, git clone, and run the applications in your EC2 instances.
 - navigate to the instance details by going to EC2 dashboard and clicking on the newly created instance
 - view the public ipv4 address by clicking on the instance and viewing it's details. You will need this address later.
 
@@ -153,8 +153,8 @@ DynamoDB Table Creation & Connection
 - Table name: table_01
 - Partition key: "timestamp" type = String
 
-Now you should have all of the necessary tools installed on your EC2 instance to run the applications.
-- IMPORTANT: You will need to create files for the API and CLIENT applications within your EC2 instance before running them:
+Now you should have all of the necessary tools installed on your EC2 instances to run the applications.
+- IMPORTANT: You will need to create files for the API and CLIENT applications within your EC2 instances before running them:
     - API:
     ```
     touch secrets.json
@@ -166,17 +166,19 @@ Now you should have all of the necessary tools installed on your EC2 instance to
     echo 'API_URL=http://<FASTAPI-EC2-PUBLIC-IP>:8000/predict' > .env
     ```
 - follow the 'Local Development' section of this readme:
-    - git clone the repo on the ec2 instance
+    - git clone the repo on the EC2 instance
     - cd into the repo
+    - cd into the specific target directory: /api, /client, or /monitoring
     - 'make build'
     - 'make run'
 - to access the applications from your machine:
+    - in the following replace \<EC2-PUBLIC-IP> with the public ipv4 address from above for each instance
     - navigate to http://\<EC2-PUBLIC-IP>:8501 for the CLIENT and MONITORING apps
     - navigate to http://\<EC2-PUBLIC-IP>:8000/docs to view the docs for the FastAPI app
     - in Postman interact with the endpoints located at:
         - GET http://\<EC2-PUBLIC-IP>:8000/health
         - POST http://\<EC2-PUBLIC-IP>:8000/predict
-- to remove the Docker images from the EC2 instances run 'make clean'
+- to remove the Docker image from the EC2 instance run 'make clean'
 - to exit the ssh connection run 'exit' in the terminal shell you are currently using to connect
 
 That is it! You should now be able to connect to your EC2 instances via ssh and run the applications within this repository. 
